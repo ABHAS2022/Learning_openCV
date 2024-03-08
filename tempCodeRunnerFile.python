@@ -1,0 +1,83 @@
+import cv2
+import mediapipe as mp
+import time
+import ctypes
+import pyautogui
+import numpy as np
+
+pyautogui.FAILSAFE = False
+
+
+
+lis = []
+# cap = cv2.VideoCapture(0)
+img = cv2.imread("C:\\Users\\ABHAS\\OneDrive\\Pictures\\Camera Roll\\WIN_20240309_00_48_25_Pro.jpg")
+mphands = mp.solutions.hands
+hands = mphands.Hands(max_num_hands = 1)
+mpdraw = mp.solutions.drawing_utils
+
+
+prevTime = 0
+
+while True:
+    # success, img = cap.read()
+    img = cv2.flip(img,1)
+    user32 = ctypes.windll.user32
+    screen_width, screen_height = user32.GetSystemMetrics(0), user32.GetSystemMetrics(1)
+    frame_height, frame_width, _ = img.shape
+
+    # print("scree_wid ",screen_width,"screen_hei ",screen_height)
+    # print("frame_hei ",frame_height,"frame_wid ",frame_width)
+
+    scaleWidth = float(screen_width)/float(frame_width)
+    scaleHeight = float(screen_height)/float(frame_height)
+    # print("scale wid ", scaleWidth,"scaleHeight ",scaleHeight)
+    # if scaleHeight>scaleWidth:
+    #         imgScale = scaleWidth
+
+    # else:
+    #     imgScale = scaleHeight
+
+    newX,newY = img.shape[1]*scaleWidth, img.shape[0]*scaleHeight
+    # print(newX,newY)
+    l = [0,0]
+    cx,cy = 0,0
+    img = cv2.resize(img,(int(newX),int(newY)))
+    imgRGB = cv2.cvtColor(img,cv2.COLOR_BGR2RGB)
+    results = hands.process(imgRGB)
+    if(results.multi_hand_landmarks):
+        for handLMS in results.multi_hand_landmarks:
+            for id, lms in enumerate(handLMS.landmark):
+                # h,w,c = img.shape
+                # l = [cx,cy]
+                cx, cy = int(lms.x*newX) ,int(lms.y*newY)
+                # d1 = 0
+                # d2 = 0
+                l1 = []
+                l2 = []
+
+                if id == 4:
+                    l1 = [cx,cy]
+                if id == 8:
+                    l2 = [cx,cy]
+                    # d2 = np.linalg.norm([cx,cy])
+                    # # print([id,cx,cy])
+                    # dist = np.abs(d1 - d2)
+                    # pyautogui.moveTo(cx,cy)
+                    cv2.circle(img,(cx,cy),7,(235,92,39),cv2.FILLED)
+                cv2.line(img=img,start_point = l1,end_point = l2,color=(200,0,0),thickness=5)
+
+
+            mpdraw.draw_landmarks(img,handLMS,mphands.HAND_CONNECTIONS)
+
+
+
+    currTime = time.time()
+    fps = 1/(currTime - prevTime)
+    prevTime = currTime
+    cv2.putText(img,str(int(fps)),(10,70),cv2.FONT_HERSHEY_COMPLEX,1,(255,0,255),1)
+
+
+    cv2.imshow("Video",img)
+
+    cv2.waitKey(1)
