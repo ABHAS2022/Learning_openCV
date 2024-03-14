@@ -1,7 +1,8 @@
 import cv2
 import mediapipe as mp
 import time
-import pyautogui
+# import pyautogui
+import math
 # 
 
 
@@ -55,6 +56,7 @@ class handDetector():
                         # print(id,cx,cy)
                         # if id == 8:
                         #     cv2.circle(img,(cx,cy),15,(235,92,39),cv2.FILLED)
+
     def findposition(self,img,handnumber = 0,draw = True):
         lmslist = []
         imgRGB = cv2.cvtColor(img,cv2.COLOR_BGR2RGB)
@@ -72,10 +74,25 @@ class handDetector():
                     if draw:
                         cv2.circle(img,(cx,cy),7,(235,92,39),cv2.FILLED)        
         return lmslist
-            
+    def finddistance(self,p1,p2,img,draw=True,r = 15,t = 3):
+        x1,y1 = self.lmlist[p1][1:]           
+        x2,y2 = self.lmlist[p2][1:]
+        cx,cy = (x1+x2)//2, (y1+y2)//2
+
+        if draw:
+            cv2.line(img,(x1,y1),(x2,y2),(255,0,255),t)
+            cv2.circle(img,(x1,x2),r,(255,0,255),cv2.FILLED)
+            cv2.circle(img,(cx,cy),r,(0,0,255),cv2.FILLED)
+            cv2.circle(img,(x2,y2),r,(0,0,255),cv2.FILLED)
+        length = math.hypot(x2-x1,y2-y1)
+
+
+        return length,img,[x1,y1,x2,y2,cx,cy]
+
+
 def main():
 
-    cap = cv2.VideoCapture(0)
+    cap = cv2.VideoCapture(1)
     currTime = 0
     prevTime = 0
     detector = handDetector()
