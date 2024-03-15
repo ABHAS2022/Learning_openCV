@@ -5,7 +5,7 @@ This project implements a virtual mouse using OpenCV, a computer vision library.
 
 ## Features
 - **Hand Detection:** Utilizes the Mediapipe library for accurate hand detection and landmark tracking.
-- **Gesture Recognition:** Recognizes predefined hand gestures to perform mouse actions such as clicking, dragging, and scrolling.
+- **Gesture Recognition:** Recognizes predefined hand gestures to perform mouse actions such as clicking and dragging.
 - **Real-time Tracking:** Achieves smooth and responsive tracking of hand movements for seamless cursor control.
 - **User-Friendly Interface:** Provides a simple and intuitive interface for users to interact with the virtual mouse using their hands.
 - **Customizable Gestures:** Allows users to define custom gestures for specific mouse actions, enhancing personalization and usability.
